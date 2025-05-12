@@ -13,7 +13,7 @@ Projeto acadêmico desenvolvido com Django, Docker e PostgreSQL. O sistema é re
 ### 📥 Instalação
 1. Clone o repositório:
 ```bash
-git clone https://github.com/seu-usuario/sistema_concessionaria.git
+git clone https://github.com/Deivisson-dev/sistema_concessionaria.git
 cd sistema_concessionaria
 ```
 
