@@ -1,7 +1,7 @@
 # users/forms.py
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from .models import CustomUser  # Atualize aqui
+from .models import CustomUser
 
 class RegistrationForm(UserCreationForm):
     email = forms.EmailField(required=True)
