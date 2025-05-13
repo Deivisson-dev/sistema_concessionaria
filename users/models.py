@@ -1,82 +1,101 @@
 from django.db import models
 
-# Create your models here.
-
 class Funcionario(models.Model):
     nome = models.CharField(max_length=100)
-    id_funcionario = models.IntegerField(unique=True)
-    cargo = models.CharField(max_length=50)
-
-    def login(self):
-        return "Funcionário logado no sistema."
-
-    def visualizar_historico_compras(self):
-        return "Histórico de compras visualizado."
-
-    def consultar_cliente(self):
-        return "Consulta de cliente realizada."
-
-    def cancelar_venda(self):
-        return "Venda cancelada."
-
-    def consultar_estoque(self):
-        return "Estoque consultado."
-
-    def visualizar_vendas(self):
-        return "Vendas visualizadas."
-
-    def alterar_status_venda(self):
-        return "Status da venda alterado."
-
-    def filtrar_veiculos_por_atributo(self):
-        return "Veículos filtrados por atributo."
-
-    def consultar_veiculos(self):
-        return "Veículos consultados."
+    cargo = models.CharField(max_length=50, choices=[('Vendedor', 'Vendedor'), ('Gerente', 'Gerente')])
+    login = models.CharField(max_length=50, unique=True)
+    senha = models.CharField(max_length=128)  # Use um campo adequado para armazenar senhas de forma segura
 
     def __str__(self):
         return self.nome
 
-class Gerente(Funcionario):
-    def gerenciar_usuario_permissao(self):
-        return "Usuários e permissões gerenciados."
+class Vendedor(models.Model):
+    id = models.AutoField(primary_key=True)
+    funcionario = models.OneToOneField(Funcionario, on_delete=models.CASCADE)
 
-    def cadastrar_veiculo(self):
-        return "Veículo cadastrado."
+    def __str__(self):
+        return self.funcionario.nome
 
-    def editar_informacao_veiculo(self):
-        return "Informação do veículo editada."
+class Administrador(models.Model):
+    id = models.AutoField(primary_key=True)
+    funcionario = models.OneToOneField(Funcionario, on_delete=models.CASCADE)
 
-    def excluir_veiculo(self):
-        return "Veículo excluído."
+    def __str__(self):
+        return self.funcionario.nome
 
-    def solicitar_compra_veiculo_montadora(self):
-        return "Solicitação de compra de veículo enviada à montadora."
+class Cliente(models.Model):
+    id = models.AutoField(primary_key=True)
+    nome = models.CharField(max_length=100)
+    cpf_cnpj = models.CharField(max_length=18, unique=True)
+    endereco = models.CharField(max_length=200)
+    telefone = models.CharField(max_length=20)
+    email = models.EmailField(blank=True, null=True)
 
-    def registrar_chegada_veiculo(self):
-        return "Chegada de veículo registrada."
+    def __str__(self):
+        return self.nome
 
-    def consolidar_pagamentos(self):
-        return "Pagamentos consolidados."
+class VeiculoEstoque(models.Model):
+    id = models.AutoField(primary_key=True)
+    modelo = models.CharField(max_length=50)
+    marca = models.CharField(max_length=50)
+    ano = models.IntegerField()
+    cor = models.CharField(max_length=30)
+    preco = models.DecimalField(max_digits=10, decimal_places=2)
+    numero_de_chassi = models.CharField(max_length=17, unique=True)
+    data_de_entrada = models.DateField(auto_now_add=True)
 
-    def definir_metas_faturamento(self):
-        return "Metas de faturamento definidas."
+    def __str__(self):
+        return f"{self.marca} {self.modelo} ({self.ano})"
 
-    def gerar_relatorio_financeiro(self):
-        return "Relatório financeiro gerado."
+class CarroEncomenda(models.Model):
+    id = models.AutoField(primary_key=True)
+    modelo = models.CharField(max_length=50)
+    marca = models.CharField(max_length=50)
+    ano = models.IntegerField()
+    cor = models.CharField(max_length=30)
+    preco_sugerido = models.DecimalField(max_digits=10, decimal_places=2)
+    descricao_opcionais = models.TextField(blank=True, null=True)
+    prazo_entrega_estimado = models.DateField(blank=True, null=True)
 
-class Vendedor(Funcionario):
-    def cadastrar_cliente(self):
-        return "Cliente cadastrado."
+    def __str__(self):
+        return f"{self.marca} {self.modelo} (Encomenda - {self.ano})"
 
-    def editar_cliente(self):
-        return "Cliente editado."
+class Venda(models.Model):
+    id = models.AutoField(primary_key=True)
+    funcionario = models.ForeignKey(Funcionario, on_delete=models.CASCADE)
+    cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
+    veiculo_estoque = models.ForeignKey(VeiculoEstoque, on_delete=models.SET_NULL, null=True, blank=True)
+    carro_encomenda = models.ForeignKey(CarroEncomenda, on_delete=models.SET_NULL, null=True, blank=True)
+    data_da_venda = models.DateTimeField(auto_now_add=True)
+    valor_total = models.DecimalField(max_digits=12, decimal_places=2)
+    tipo_veiculo = models.CharField(max_length=10, choices=[('Estoque', 'Estoque'), ('Encomenda', 'Encomenda')])
+    status_venda = models.CharField(max_length=20)
 
-    def gerar_contrato_venda(self):
-        return "Contrato de venda gerado."
+    def __str__(self):
+        return f"Venda #{self.id} em {self.data_da_venda.strftime('%d/%m/%Y %H:%M')}"
 
-    def solicitar_ajuste_estoque_administrador(self):
-        return "Solicitação de ajuste de estoque enviada ao administrador."
+class Pagamento(models.Model):
+    id = models.AutoField(primary_key=True)
+    venda = models.OneToOneField(Venda, on_delete=models.CASCADE)
+    meio_pagamento = models.CharField(max_length=50)
+    status_pagamento = models.CharField(max_length=20)
 
-    def registrar_venda(self):
-        return "Venda registrada."
+    def __str__(self):
+        return f"Pagamento #{self.id} da Venda #{self.venda.id}"
+
+class CartaoCredito(models.Model):
+    pagamento = models.OneToOneField(Pagamento, on_delete=models.CASCADE)
+    numero_cartao = models.CharField(max_length=20)
+    validade = models.DateField()
+    codigo_seguranca = models.CharField(max_length=4)
+    nome_impresso = models.CharField(max_length=100)
+
+    def __str__(self):
+        return f"Cartão de Crédito ****-****-****-{self.numero_cartao[-4:]}"
+
+class ContratoVenda(Venda):
+    # A classe ContratoVenda herda todos os campos de Venda
+    pass
+
+    def __str__(self):
+        return f"Contrato de Venda #{self.id} em {self.data_da_venda.strftime('%d/%m/%Y %H:%M')}"
