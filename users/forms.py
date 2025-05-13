@@ -1,13 +1,15 @@
+# users/forms.py
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from django.contrib.auth.models import User
+from .models import CustomUser  # Atualize aqui
 
 class RegistrationForm(UserCreationForm):
     email = forms.EmailField(required=True)
+    tipo = forms.ChoiceField(choices=CustomUser.TIPOS, widget=forms.Select(attrs={'class': 'form-control'}))
 
     class Meta:
-        model = User  # Ou seu modelo customizado se tiver
-        fields = ['username', 'email', 'password1', 'password2']
+        model = CustomUser
+        fields = ['username', 'email', 'tipo', 'password1', 'password2']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -15,6 +17,7 @@ class RegistrationForm(UserCreationForm):
         self.fields['email'].widget.attrs.update({'class': 'form-control'})
         self.fields['password1'].widget.attrs.update({'class': 'form-control'})
         self.fields['password2'].widget.attrs.update({'class': 'form-control'})
+
 
 class LoginForm(AuthenticationForm):
     def __init__(self, *args, **kwargs):

@@ -3,7 +3,7 @@
 {% block content %}
 <div class="card shadow">
     <div class="card-header bg-success text-white">
-        <h4 class="mb-0">Bem-vindo, {{ request.user.username }}!</h4>
+        <h4 class="mb-0">Bem-vindo, {{ request.user.username }} ({{ request.user.tipo|capfirst }})!</h4>
     </div>
     <div class="card-body">
         <p>Você está acessando o sistema da concessionária.</p>
