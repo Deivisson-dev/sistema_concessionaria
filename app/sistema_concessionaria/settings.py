@@ -28,7 +28,7 @@ SECRET_KEY = 'django-insecure-*qvf(bzja#=xc3_qth5v7ed8lc8sh@6r#9fw61u%^2l8g3^73-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'clientes.apps.ClientesConfig',
     'crispy_forms',
     'crispy_bootstrap5',
+    'veiculos.apps.VeiculosConfig'
 
 ]
 

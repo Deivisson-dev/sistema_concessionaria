@@ -1,0 +1,104 @@
+{% extends 'users/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="card shadow">
+    <div class="card-header bg-primary text-white">
+        <h4 class="mb-0">
+            <i class="fas fa-users me-2"></i>Veiculos
+        </h4>
+    </div>
+    
+    <div class="card-body">
+        <a href="{% url 'veiculos:criar' %}" class="btn btn-success mb-4">
+            <i class="fas fa-plus-circle me-2"></i>Novo Veiculo
+        </a>
+
+        <!-- Modal de Confirmação -->
+        <div class="modal fade" id="confirmarExclusaoModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header bg-danger text-white">
+                        <h5 class="modal-title">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            Confirmar Exclusão
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Tem certeza que deseja excluir o veiculo <strong id="placaVeiculo"></strong>?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fas fa-times-circle me-2"></i>Cancelar
+                        </button>
+                        <form id="formExclusao" method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-trash-alt me-2"></i>Confirmar
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Marca</th>
+                        <th>Modelo</th>
+                        <th>Placa</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for veiculo in veiculos %}
+                    <tr>
+                        <td>{{ veiculo.marca }}</td>
+                        <td>{{ veiculo.modelo }}</td>
+                        <td>{{ veiculo.placa }}</td>
+                        <td>
+                            <a href="{% url 'veiculos:editar' veiculo.pk %}" class="btn btn-sm btn-warning">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <button type="button" 
+                                    class="btn btn-sm btn-danger" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#confirmarExclusaoModal"
+                                    data-nome="{{ veiculo.placa }}"
+                                    data-url="{% url 'veiculos:excluir' veiculo.pk %}">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center">Nenhum veiculo cadastrado</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% block javascript %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const modal = document.getElementById('confirmarExclusaoModal');
+    
+    modal.addEventListener('show.bs.modal', function(event) {
+        const button = event.relatedTarget;
+        const placa = button.getAttribute('data-placa');
+        const url = button.getAttribute('data-url');
+        
+        document.getElementById('placaVeiculo').textContent = placa;
+        document.getElementById('formExclusao').action = url;
+    });
+});
+</script>
+{% endblock %}
+
+{% endblock %}
