@@ -1,6 +1,7 @@
 from django.db import models
 from django.core.validators import RegexValidator
 from django.utils import timezone
+from django.core.exceptions import ValidationError
 
 
 class ClienteManager(models.Manager):
@@ -27,6 +28,9 @@ class Cliente(models.Model):
     all_objects = models.Manager() 
     
     def soft_delete(self):
+        if self.venda_set.exists():
+            raise ValidationError("Não é possível excluir um cliente vinculado a vendas")
+
         self.deleted = True
         self.deleted_at = timezone.now()
         self.save(update_fields=['deleted', 'deleted_at'])

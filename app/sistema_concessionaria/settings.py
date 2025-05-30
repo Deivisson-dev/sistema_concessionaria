@@ -44,8 +44,8 @@ INSTALLED_APPS = [
     'clientes.apps.ClientesConfig',
     'crispy_forms',
     'crispy_bootstrap5',
-    'veiculos.apps.VeiculosConfig'
-
+    'veiculos.apps.VeiculosConfig',
+    'vendas.apps.VendasConfig',
 ]
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"

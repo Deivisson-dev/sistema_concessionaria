@@ -1,0 +1,51 @@
+{% extends 'users/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="card shadow">
+    <div class="card-header bg-primary text-white">
+        <h4 class="mb-0">
+            <i class="fas fa-{% if form.instance.pk %}edit{% else %}plus-circle{% endif %} me-2"></i>
+            {% if form.instance.pk %}Editar{% else %}Nova{% endif %} Venda
+        </h4>
+    </div>
+    
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            {{ form|crispy }}
+            
+            <div class="d-flex justify-content-end gap-2 mt-4">
+                <button type="submit" class="btn btn-success">
+                    <i class="fas fa-save me-2"></i>Salvar
+                </button>
+                <a href="{% url 'vendas:listar' %}" class="btn btn-secondary">
+                    <i class="fas fa-times-circle me-2"></i>Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% block javascript %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+<script>
+$(document).ready(function(){
+    // Máscara para valor (formato monetário)
+    $('#id_valor').mask('#.##0,00', {reverse: true});
+    
+    // Máscara para data
+    $('#id_data_venda').mask('00/00/0000');
+    
+    // Se a data estiver vazia, preenche com a data atual
+    if (!$('#id_data_venda').val()) {
+        const today = new Date();
+        const day = String(today.getDate()).padStart(2, '0');
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const year = today.getFullYear();
+        $('#id_data_venda').val(`${day}/${month}/${year}`);
+    }
+});
+</script>
+{% endblock %}
+{% endblock %}

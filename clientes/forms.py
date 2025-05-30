@@ -4,7 +4,14 @@ from .models import Cliente
 class ClienteForm(forms.ModelForm):
     class Meta:
         model = Cliente
-        fields = '__all__'
+        fields = [
+            'cpf',
+            'nome',
+            'email',
+            'telefone',
+            'data_nascimento',
+            'endereco'
+        ]
         widgets = {
             'data_nascimento': forms.DateInput(attrs={'type': 'date'}),
         }
