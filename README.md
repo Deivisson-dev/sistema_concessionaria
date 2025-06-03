@@ -36,3 +36,6 @@ touch .env
 ```bash
   docker compose exec web python app/manage.py createsuperuser
 ```
+
+6. Acesse a rota
+   localhost:8000/cadastro
